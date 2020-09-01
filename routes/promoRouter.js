@@ -15,7 +15,7 @@ promoRouter.route('/')
             },(err) => next(err))
             .catch((err)=> next(err));
     })
-    .post(authenticate.verifyUser, (req,res,next)=>{
+    .post(authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
         Promotions.create(req.body)
             .then((promotion)=>{
                 console.log('Promotion created');
@@ -25,10 +25,10 @@ promoRouter.route('/')
             }, (err) => next(err))
             .catch((err)=> next(err));
     })
-    .put(authenticate.verifyUser, (req,res,next)=>{
+    .put(authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
         res.end("PUT operation supported on /promotions");
     })
-    .delete(authenticate.verifyUser, (req,res,next)=>{
+    .delete(authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
         Promotions.remove({})
         .then((resp)=>{
             res.statusCode = 200;
@@ -48,7 +48,7 @@ promoRouter.route('/:promoId')
         }, (err) => next(err))
         .catch((err)=> next(err));
     })
-    .post(authenticate.verifyUser, (req,res,next)=>{
+    .post(authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
         res.end(`POST operation supported on /promotions/${req.params.promoId}`);
     })
     .put(authenticate.verifyUser, (req,res,next)=>{
@@ -63,7 +63,7 @@ promoRouter.route('/:promoId')
         }, (err) => next(err))
         .catch((err)=> next(err));
     })
-    .delete(authenticate.verifyUser, (req,res,next)=>{
+    .delete(authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
         Promotions.findByIdAndRemove(req.params.promoId)
             .then((resp)=>{
                 res.statusCode = 200;

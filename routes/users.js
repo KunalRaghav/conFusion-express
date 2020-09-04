@@ -3,9 +3,10 @@ const Users = require('../models/users');
 var passport = require('passport');
 var router = express.Router();
 const authenticate = require('../authenticate');
+const { cors, corsWithOptions } = require('./cors');
 
 /* GET users listing. */
-router.get('/', authenticate.verifyUser, authenticate.isAdmin, function(req, res, next) {
+router.get('/', corsWithOptions, authenticate.verifyUser, authenticate.isAdmin, function(req, res, next) {
   Users.find({})
     .then((users)=>{
       res.statusCode = 200;
@@ -19,7 +20,7 @@ router.get('/', authenticate.verifyUser, authenticate.isAdmin, function(req, res
 /**
  * SIGN UP
  */
-router.post('/signup', (req, res, next)=>{
+router.post('/signup', corsWithOptions, (req, res, next)=>{
   Users.register(new Users({username:req.body.username}), req.body.password, (err, user)=>{
       if(err){
         res.statusCode = 500;
@@ -48,7 +49,7 @@ router.post('/signup', (req, res, next)=>{
 });
 
 
-router.post('/login', passport.authenticate('local'), (req, res)=>{
+router.post('/login', corsWithOptions, passport.authenticate('local'), (req, res)=>{
   var token = authenticate.getToken({_id : req.user._id})
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
@@ -59,7 +60,7 @@ router.post('/login', passport.authenticate('local'), (req, res)=>{
  *  LOG OUT
  */
 
-router.get('/logout', (req, res, next)=>{
+router.get('/logout', cors, (req, res, next)=>{
   if(req.session){
     req.session.destroy();
     res.clearCookie('session-id');

@@ -4,6 +4,7 @@ const Dishes = require('../models/dishes');
 const authenticate = require('../authenticate');
 const uploadRouter = express.Router();
 const multer = require('multer');
+const { cors, corsWithOptions } = require('./cors');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb)=> {
@@ -31,19 +32,20 @@ const upload = multer({
 uploadRouter.use(express.json());
 
 uploadRouter.route('/')
-    .get(authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
+    .options(corsWithOptions, (req, res)=> {res.sendStatus(200);})
+    .get(cors ,authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
         res.statusCode = 403;
         res.end("GET operation not supported on /imageUpload");
     })
-    .put(authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
+    .put( corsWithOptions, authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
         res.statusCode = 403;
         res.end("PUT operation not supported on /imageUpload");
     })
-    .delete(authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
+    .delete(corsWithOptions, authenticate.verifyUser, authenticate.isAdmin, (req,res,next)=>{
         res.statusCode = 403;
         res.end("DELETE operation not supported on /imageUpload");
     })
-    .post(authenticate.verifyUser, authenticate.isAdmin, 
+    .post(corsWithOptions, authenticate.verifyUser, authenticate.isAdmin, 
         upload.single('imageFile'), (req, res)=>{
             res.statusCode = 200;
             res.setHeader("Content-Type","application/json");
